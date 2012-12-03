@@ -18,7 +18,7 @@ import webapp2
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Very Useful Application for Last.fm Tag Correction')
+        self.response.write('Very Useful Application for Last.fm Tag Correction[N\TEST]')
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
