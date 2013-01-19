@@ -14,12 +14,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webapp2
+import webapp2, jinja2, os
+import simple
+from model.MyListener import *
+jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Very Useful Application for Last.fm Tag Correction[N\TEST]')
+        template = jinja_environment.get_template('templates/main.html')
+        self.response.write(template.render())
+
+    def post(self):
+        login = self.request.get('login')
+        users = MyListener.all().fetch(200)
+
+        my_user = None
+        for user in users:
+            if user.login == login:
+                my_user = user
+                break
+
+        if not my_user:
+            my_user = MyListener()
+            my_user.login = login
+            my_user.data = simple.getLove(login)
+            my_user.put()
+        self.redirect('/user/' + my_user.login)
+
+class ListenerHandler(webapp2.RequestHandler):
+    def get(self, login):
+        users = MyListener.all().fetch(200)
+
+        my_user = None
+        for user in users:
+            if user.login == login:
+                my_user = user
+                break
+        template_values = {'info' : my_user.data}
+        template = jinja_environment.get_template('templates/info.html')
+        self.response.write(template.render(template_values))
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
-], debug=True)
+                                  ('/', MainHandler),
+                                  ('r*/user/(.*)', ListenerHandler)
+                              ], debug=True)
