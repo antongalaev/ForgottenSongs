@@ -1,5 +1,5 @@
 from google.appengine.ext import db
 
-class MyListener(db.Model):
+class FSUser(db.Model):
     login = db.StringProperty()
     data = db.TextProperty()

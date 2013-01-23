@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 import webapp2, jinja2, os
-import simple
-from model.MyListener import *
+import lastfetch
+from model.FSUser import *
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 class MainHandler(webapp2.RequestHandler):
@@ -26,7 +26,7 @@ class MainHandler(webapp2.RequestHandler):
 
     def post(self):
         login = self.request.get('login')
-        users = MyListener.all().fetch(200)
+        users = FSUser.all().fetch(200)
 
         my_user = None
         for user in users:
@@ -35,15 +35,19 @@ class MainHandler(webapp2.RequestHandler):
                 break
 
         if not my_user:
-            my_user = MyListener()
+            my_user = FSUser()
             my_user.login = login
-            my_user.data = simple.getLove(login)
+            data = lastfetch.getInfo(login)
+            result = ''
+            for track in data:
+                result += track['artist']['name']+' - '+track['name']+' : '+ track['date']['#text'] + '<br>'
+            my_user.data = result
             my_user.put()
         self.redirect('/user/' + my_user.login)
 
 class ListenerHandler(webapp2.RequestHandler):
     def get(self, login):
-        users = MyListener.all().fetch(200)
+        users = FSUser.all().fetch(200)
 
         my_user = None
         for user in users:
