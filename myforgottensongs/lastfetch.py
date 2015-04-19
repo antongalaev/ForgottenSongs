@@ -5,10 +5,10 @@ API_KEY = 'c6a94d5558b187f5f263f8cdf743c331'
 
 def process_loved_tracks(login):
     request = ('http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks' + '&user=' + login +
-                '&api_key=' + API_KEY +  '&format=json')
-    response = urlfetch.fetch(request, deadline=60)
-    data = json.loads(response.content)
-    total_tracks_count = int(data['lovedtracks']['@attr']['total'])
+                '&api_key=' + API_KEY +  '&format=json') # составляем строку запроса 
+    response = urlfetch.fetch(request, deadline=60) # делаем запрос с помощью библиотеки urlfetch
+    data = json.loads(response.content) # json-парсером считываем ответ в "словарь"
+    total_tracks_count = int(data['lovedtracks']['@attr']['total']) # читаем данные из словаря
     total_pages = int(data['lovedtracks']['@attr']['totalPages'])
 
     zero_tracks = []
